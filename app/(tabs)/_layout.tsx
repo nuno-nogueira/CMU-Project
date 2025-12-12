@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { Image, View } from 'react-native';
 import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -14,34 +14,117 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarStyle: {
+          height: 110,
+          paddingBottom: 30,
+          paddingTop: 30,
+          paddingLeft: 10,
+          borderTopEndRadius: 35,
+          borderTopStartRadius: 35
+        }
       }}
     >
       <Tabs.Screen
         name="menu"
         options={{
-          title: 'Menu',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="list.bullet" color={color} />,
+          title: '',
+          tabBarIcon: ({ focused }) => (
+          <View
+            style={{
+              padding: 16,
+              borderRadius: 50,
+              backgroundColor: focused ? 'rgba(250, 128, 114, 0.3)' : 'transparent'
+            }}
+          >
+            
+            <Image
+              source={require('../../assets/navbar-icons/homepage-icon.png')}
+              style={{
+                width: 32,
+                height: 32
+              }}
+              resizeMode='contain'
+            />
+          </View>
+          ),
         }}
       />
+
       <Tabs.Screen
-        name="mapa"
+        name="map"
         options={{
-          title: 'Mapa',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="map.fill" color={color} />,
+          title: '',
+          tabBarIcon: ({ focused }) => (
+          <View
+            style={{
+              padding: 16,
+              borderRadius: 50,
+              backgroundColor: focused ? 'rgba(250, 128, 114, 0.3)' : 'transparent'
+            }}
+          >
+            
+            <Image
+              source={require('../../assets/navbar-icons/map-icon.png')}
+              style={{
+                width: 32,
+                height: 32
+              }}
+              resizeMode='contain'
+            />
+          </View>
+          ),
         }}
       />
+
       <Tabs.Screen
-        name="notas"
+        name="notes"
         options={{
-          title: 'Notas',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="note.text" color={color} />,
+          title: '',
+          tabBarIcon: ({ focused }) => (
+          <View
+            style={{
+              padding: 16,
+              borderRadius: 50,
+              backgroundColor: focused ? 'rgba(250, 128, 114, 0.3)' : 'transparent'
+            }}
+          >
+            
+            <Image
+              source={require('../../assets/navbar-icons/notes-icon.png')}
+              style={{
+                width: 32,
+                height: 32
+              }}
+              resizeMode='contain'
+            />
+          </View>
+          ),
         }}
       />
+
       <Tabs.Screen
-        name="perfil"
+        name="profile"
         options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          title: '',
+          tabBarIcon: ({ focused }) => (
+          <View
+            style={{
+              padding: 16,
+              borderRadius: 50,
+              backgroundColor: focused ? 'rgba(250, 128, 114, 0.3)' : 'transparent'
+            }}
+          >
+            
+            <Image
+              source={require('../../assets/navbar-icons/profile-icon.png')}
+              style={{
+                width: 32,
+                height: 32
+              }}
+              resizeMode='contain'
+            />
+          </View>
+          ),
         }}
       />
     </Tabs>
