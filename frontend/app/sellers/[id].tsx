@@ -6,19 +6,19 @@ import { Stack } from "expo-router";
 import { SELLERS, POSTS } from "@/constants/sellers";
 
 // DESCOMENTAR MAIS TARDE
-// import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 
 // Component imports
 import { SellerHeader } from "@/components/seller-components/SellerHeader";
 import { SellerTabs } from "@/components/seller-components/SellerTabs";
 
 const VendorPage = () => {
-  // IMPLEMENTAR MAIS TARDE
-  // ir buscar o feirante com o id certo, dependendo de qual foi clicado
-  // const { id } = useLocalSearchParams();
+  // ir buscar o feirante com o id certo, dependendo de qual foi clicado 
+  // (ver melhor isto mais tarde)
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   // Select the current seller from data
-  const seller = SELLERS[0];
+  const seller = SELLERS.find(s => s.id.toString() === id?.toString()) || SELLERS[0];
 
   // Filter posts that belong to this specific seller
   const sellerPosts = POSTS.filter(
@@ -82,9 +82,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 });
-
-
-// import React, { useState } from "react";
 // import { View, StyleSheet, FlatList } from "react-native";
 // import { Stack } from "expo-router";
 

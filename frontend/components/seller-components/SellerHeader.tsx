@@ -108,9 +108,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
 });
-
-
-// import React from "react";
 // import {
 //   View,
 //   Text,

@@ -13,10 +13,8 @@ export default function UserNotesTab() {
       <View style={styles.content}>
         
         {/* Empty state illustration */}
-        <Image 
-          source={{ 
-            uri: 'https://cdni.iconscout.com/illustration/premium/thumb/no-data-found-8867280-7265556.png' 
-          }} 
+        <Image
+          source={require('../../assets/notes/addNotes.png')}
           style={styles.illustration}
           resizeMode="contain"
         />

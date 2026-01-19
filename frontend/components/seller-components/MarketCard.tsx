@@ -18,17 +18,12 @@ interface MarketCardProps {
 export function MarketCard({ market }: MarketCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const sourceImage = market.image 
-    ? (typeof market.image === 'string' ? { uri: market.image } : market.image)
-    : { uri: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?q=80&w=400" };
-
   return (
     <View style={styles.card}>
-      <Image source={sourceImage} style={styles.image} resizeMode="cover" />
+      <Image source={market.image} style={styles.image} resizeMode="cover" />
 
       <View style={styles.content}>
         <View style={styles.headerRow}>
-          {/* Using #f88b72 for schedule text */}
           <Text style={styles.schedule} numberOfLines={1}>
             {market.schedule}
           </Text>
@@ -37,7 +32,6 @@ export function MarketCard({ market }: MarketCardProps) {
             onPress={() => setIsFavorite(!isFavorite)}
             style={styles.favoriteButton}
           >
-            {/* Using #c64f23 for the heart icon */}
             <Ionicons 
               name={isFavorite ? "heart" : "heart-outline"} 
               size={22} 
@@ -70,7 +64,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 7,
     marginVertical: 8,
     alignItems: "center",
-    // Shadow settings
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -99,7 +92,7 @@ const styles = StyleSheet.create({
     padding: 2 
   },
   schedule: { 
-    color: "#f88b72", // Secondary coral color
+    color: "#f88b72",
     fontSize: 13, 
     fontWeight: "500" 
   },
