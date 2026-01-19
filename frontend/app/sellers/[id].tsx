@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { Stack } from "expo-router"; 
 
 // Data imports
 import { SELLERS, POSTS } from "@/constants/sellers";
 
+// DESCOMENTAR MAIS TARDE
+// import { useLocalSearchParams } from "expo-router";
+
 // Component imports
 import { SellerHeader } from "@/components/seller-components/SellerHeader";
 import { SellerTabs } from "@/components/seller-components/SellerTabs";
 
 const VendorPage = () => {
+  // IMPLEMENTAR MAIS TARDE
+  // ir buscar o feirante com o id certo, dependendo de qual foi clicado
+  // const { id } = useLocalSearchParams();
+
   // Select the current seller from data
   const seller = SELLERS[0];
 
@@ -17,6 +24,8 @@ const VendorPage = () => {
   const sellerPosts = POSTS.filter(
     post => post.sellerId === seller.id
   );
+
+  const [liked, setLiked] = useState(false);
 
   return (
     <View style={styles.mainContainer}>
@@ -33,14 +42,16 @@ const VendorPage = () => {
         ListHeaderComponent={
           <>
             {/* Top section with seller information and image */}
-            <SellerHeader
-              vendor={{
-                name: seller.name,
-                location: seller.location,
-                category: seller.categories?.[0],
-              }}
-              imageUri={seller.imageUri}
-            />
+          <SellerHeader
+            vendor={{
+              name: seller.name,
+              location: seller.location,
+              category: seller.categories?.[0],
+            }}
+            imageUri={seller.imageUri}
+            liked={liked}
+            onToggleLike={() => setLiked(prev => !prev)}
+          />
 
             {/* Tab section containing "About" and "Announcements" */}
             <SellerTabs

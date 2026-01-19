@@ -85,7 +85,7 @@ export const MARKETS = [
     address: "R. Formosa 322, 4000-248 Porto",
     latitude: 41.1496, 
     longitude: -8.6109,
-    // image: require("@/assets/markets/bolhao.png")
+    image: require("../assets/markets/bolhao.png")
   },
   {
     id: 2,
@@ -94,7 +94,7 @@ export const MARKETS = [
     address: "WOW - World of Wine, Gaia",
     latitude: 41.1375, 
     longitude: -8.6128,
-    // image: require("@/assets/markets/bolhao.png")
+    image: require("../assets/markets/bolhao.png")
   },
   {
     id: 3,
@@ -103,7 +103,7 @@ export const MARKETS = [
     address: "Praça De Almeida Garrett, Porto 40",
     latitude: 41.1579, 
     longitude: -8.6291,
-    // image: require("@/assets/markets/bolhao.png")
+    image: require("../assets/markets/bolhao.png")
   },
   {
     id: 4,
@@ -112,6 +112,6 @@ export const MARKETS = [
     address: "Rua de Diogo Botelho, 4150-262 Porto",
     latitude: 41.1555,
     longitude: -8.6695,
-    // image: require("@/assets/markets/foz.png")
+    image: require("../assets/markets/bolhao.png")
   }
 ];
