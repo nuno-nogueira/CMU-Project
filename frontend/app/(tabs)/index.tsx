@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Image,
@@ -7,6 +7,7 @@ import {
   FlatList,
   useColorScheme,
   ActivityIndicator,
+  Text // Importei Text para mensagens de erro cruas se necessário
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -16,12 +17,11 @@ import SearchBarComponent from "@/components/homepage-components/SearchBar";
 import FairList from "@/components/homepage-components/FairList";
 
 import { categoryIcons } from "./categoryIcons";
-import data from "../data/locations.json";
 import categories from "../data/categories.json";
 import { Colors } from "@/constants/theme";
 
-//store imports
-import { useMarketStore } from "@/stores/useMarketStore";
+// Store Imports
+import { useMarketStore } from '../../src/stores/useMarketStore';;
 
 interface Person {
   id: number;
@@ -29,7 +29,7 @@ interface Person {
 }
 
 interface FairItem {
-  id: number;
+  id: number; // ⚠️ O ideal seria mudar isto para string | number
   title: string;
   schedule: string;
   address: string;
@@ -48,37 +48,44 @@ export default function HomepageScreen({ onSelect }: HomepageProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   const theme = useColorScheme() ?? "light";
-  const brandColors = Colors[theme]; // Usando a mesma lógica do profile.tsx
+  const brandColors = Colors[theme];
 
+  // Conecta ao store
+  const { markets, fetchMarkets, isLoading, error } = useMarketStore(); // Adicionei 'error' se a tua store tiver
 
-  // Conecta ao store de markets
-  const { markets, fetchMarkets, isLoading } = useMarketStore();
-
-  // 
+  // Buscar dados
   useEffect(() => {
+    console.log("📢 A tentar buscar feiras...");
     fetchMarkets();
   }, []);
 
-  // ⚡ TRANSFORMAR DADOS DO BACKEND PARA O FRONTEND
-  // O backend devolve "Market", mas o FairList quer "FairItem". Vamos adaptar.
-  // const adaptedData: FairItem[] = markets.map((market: any) => ({
-  //   id: Number(market.id) || Math.random(), // Garante um ID numérico
-  //   title: market.name,                     // Backend: name -> Frontend: title
-  //   schedule: market.openingHours || '09:00 - 18:00', // Backend: openingHours -> Frontend: schedule
-  //   address: market.address,
-  //   // Se o backend tiver categorias, usa a primeira, senão usa 'Outros'
-  //   category: market.categories?.[0] || 'Outros', 
-  //   // Tenta adivinhar o ícone com base na categoria, ou usa um default
-  //   iconKey: market.categories?.[0] || 'fruits', 
-  //   county: market.address.split(',')[1]?.trim() || 'Portugal', // Extrai concelho da morada
-  //   people: market.sellers?.map((s: any) => ({ id: s.id, name: s.full_name })) || []
-  // }));
+  // Log para ver se os dados chegaram
+  useEffect(() => {
+    console.log("📦 Estado atual dos Markets:", markets);
+    if (error) console.error("❌ Erro na Store:", error);
+  }, [markets, error]);
 
-  // Lógica de Filtro (Agora usa o 'adaptedData' em vez do JSON fixo)
-  ///// const filteredData = adaptedData.filter((item) => {
+  // ⚡ TRANSFORMAÇÃO DE DADOS
+  const adaptedData: FairItem[] = markets.map((market: any) => {
+    // TRUQUE: MongoDB IDs são strings ("65a..."). O teu frontend quer number.
+    // O Number("65a...") dá NaN. Vamos usar um hash simples ou Math.random temporário.
+    // O ideal é mudares a interface FairItem para aceitar string.
+    const fakeId = parseInt(market.id?.substring(0, 8), 16) || Math.floor(Math.random() * 10000);
+
+    return {
+      id: fakeId, 
+      title: market.name || "Sem Nome",
+      schedule: market.openingHours || "Horário n/d",
+      address: market.address || "Morada n/d",
+      category: market.categories?.[0] || 'Outros',
+      iconKey: market.categories?.[0] || 'fruits',
+      county: market.address?.split(',')[1]?.trim() || 'Geral',
+      people: market.sellers?.map((s: any) => ({ id: Number(s.id) || 0, name: s.full_name })) || []
+    };
+  });
 
   // Lógica de Filtro
-  const filteredData = (data as FairItem[]).filter((item) => {
+  const filteredData = adaptedData.filter((item) => {
     const query = searchQuery.toLowerCase();
     const matchesTitle = item.title.toLowerCase().includes(query);
     const matchesCounty = item.county.toLowerCase().includes(query);
@@ -87,8 +94,7 @@ export default function HomepageScreen({ onSelect }: HomepageProps) {
     );
 
     const matchesSearch = matchesTitle || matchesCounty || matchesVendor;
-    const matchesCategory =
-      selectedCategory === "" || item.category === selectedCategory;
+    const matchesCategory = selectedCategory === "" || item.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
@@ -96,7 +102,7 @@ export default function HomepageScreen({ onSelect }: HomepageProps) {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemedView style={styles.container}>
-        {/* === Header: Logo e Boas vindas === */}
+        {/* Header */}
         <View style={styles.headerContainer}>
           <Image
             source={require("../../assets/images/app-logo.png")}
@@ -104,15 +110,11 @@ export default function HomepageScreen({ onSelect }: HomepageProps) {
             resizeMode="contain"
           />
           <ThemedText type="title" style={styles.welcomeMessage}>
-            Bem vindo,{" "}
-            <ThemedText type="title" style={{ color: brandColors.tint }}>
-              Ricardo
-            </ThemedText>
-            !
+            Bem vindo, <ThemedText type="title" style={{ color: brandColors.tint }}>Ricardo</ThemedText>!
           </ThemedText>
         </View>
 
-        {/* === Barra de Pesquisa === */}
+        {/* Search */}
         <View style={styles.searchContainer}>
           <SearchBarComponent
             value={searchQuery}
@@ -121,7 +123,7 @@ export default function HomepageScreen({ onSelect }: HomepageProps) {
           />
         </View>
 
-        {/* === Lista de Categorias (Chips) === */}
+        {/* Categories */}
         <View style={styles.categoriesContainer}>
           <FlatList
             horizontal
@@ -131,7 +133,6 @@ export default function HomepageScreen({ onSelect }: HomepageProps) {
             contentContainerStyle={styles.categoriesContent}
             renderItem={({ item }) => {
               const isSelected = selectedCategory === item.name;
-
               return (
                 <TouchableOpacity
                   activeOpacity={0.7}
@@ -139,25 +140,17 @@ export default function HomepageScreen({ onSelect }: HomepageProps) {
                     styles.categoryItem,
                     {
                       backgroundColor: brandColors.cardBackground,
-                      borderColor: isSelected
-                        ? brandColors.tint
-                        : brandColors.border,
+                      borderColor: isSelected ? brandColors.tint : brandColors.border,
                     },
                   ]}
-                  onPress={() =>
-                    setSelectedCategory((prev) =>
-                      prev === item.name ? "" : item.name,
-                    )
-                  }
+                  onPress={() => setSelectedCategory((prev) => prev === item.name ? "" : item.name)}
                 >
                   <Image
                     source={categoryIcons[item.iconKey]}
                     style={{
                       width: 20,
                       height: 20,
-                      tintColor: isSelected
-                        ? brandColors.tint
-                        : brandColors.text,
+                      tintColor: isSelected ? brandColors.tint : brandColors.text,
                     }}
                     resizeMode="contain"
                   />
@@ -176,26 +169,22 @@ export default function HomepageScreen({ onSelect }: HomepageProps) {
           />
         </View>
 
-        {/* === Market list === */}
+        {/* Market List */}
         <View style={styles.listContainer}>
-          {
-
-          //   isLoading ? (
-          //   <View style={styles.loadingContainer}>
-          //     <ActivityIndicator size="large" color={brandColors.tint} />
-          //     <ThemedText style={{ marginTop: 10 }}>
-          //       A carregar feiras...
-          //     </ThemedText>
-          //   </View>
-          // ):
-          
-          filteredData.length > 0 ? (
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={brandColors.tint} />
+              <ThemedText style={{ marginTop: 10 }}>A carregar feiras...</ThemedText>
+            </View>
+          ) : filteredData.length > 0 ? (
             <FairList data={filteredData} onSelect={onSelect} />
           ) : (
             <View style={styles.emptyState}>
-              <ThemedText style={{ color: "gray", fontStyle: "italic" }}>
-                Nenhuma feira encontrada com esses filtros.
+              <ThemedText style={{ color: "gray", fontStyle: "italic", marginBottom: 10 }}>
+                Nenhuma feira encontrada.
               </ThemedText>
+              {/* Debug Visual: Se a lista estiver vazia mas houver erro */}
+              {error && <Text style={{color:'red'}}>Erro: {error}</Text>}
             </View>
           )}
         </View>
@@ -205,56 +194,21 @@ export default function HomepageScreen({ onSelect }: HomepageProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 60,
-  },
-  headerContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 15,
-  },
-  logo: {
-    width: 120,
-    height: 40,
-    marginBottom: 10,
-    alignSelf: "flex-start",
-  },
-  welcomeMessage: {
-    marginBottom: 5,
-  },
-  searchContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  categoriesContainer: {
-    marginBottom: 20,
-  },
-  categoriesContent: {
-    paddingHorizontal: 20,
-    gap: 10,
-  },
+  container: { flex: 1, paddingTop: 60 },
+  headerContainer: { paddingHorizontal: 20, marginBottom: 15 },
+  logo: { width: 120, height: 40, marginBottom: 10, alignSelf: "flex-start" },
+  welcomeMessage: { marginBottom: 5 },
+  searchContainer: { paddingHorizontal: 20, marginBottom: 20 },
+  categoriesContainer: { marginBottom: 20 },
+  categoriesContent: { paddingHorizontal: 20, gap: 10 },
   categoryItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    gap: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    flexDirection: "row", alignItems: "center", borderWidth: 1,
+    borderRadius: 8, paddingHorizontal: 16, paddingVertical: 8,
+    gap: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05, shadowRadius: 2, elevation: 2,
   },
-  listContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 50,
-  },
+  listContainer: { flex: 1, paddingHorizontal: 20 },
+  emptyState: { flex: 1, alignItems: "center", justifyContent: "center", marginTop: 50 },
+  // ⚡ Estilo que faltava no teu código original:
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' }
 });
