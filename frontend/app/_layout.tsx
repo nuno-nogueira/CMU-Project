@@ -10,7 +10,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import * as Notifications from 'expo-notifications';
 
 const httpLink = createHttpLink({
-  uri: 'http://172.23.113.213:4000/graphql',
+  uri: 'http://192.168.43.145:4000/graphql',
 });
 
 const client = new ApolloClient({
